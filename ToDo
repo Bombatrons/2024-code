@@ -1,0 +1,57 @@
+1. Add the PID controller and a missing automation package to robot.java
+'''
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+'''
+
+2. We need to declare the PID Controllers and Encoders. At the bottom of Timed Robot add:
+'''
+private PIDController m_leftPIDController;
+private PIDController m_rightPIDController;
+private RelativeEncoder m_leftEncoder;
+private RelativeEncoder m_rightEncoder;
+'''
+
+3. Add the PID controllers to the bottom of Robot Init (We'll need to tune the values later)
+'''
+m_leftPIDController = new PIDController(0.1, 0.0, 0.0);
+m_rightPIDController = new PIDController(0.1, 0.0, 0.0);
+'''
+
+4. Now we can start to pull things together for automation. Add the below to Timed Robot.
+It creates a way for us to keep track of time during automation.
+'''
+private Timer autoTimer = new Timer();
+'''
+
+5. Remove line 54:
+'''
+private double startTime;
+'''
+
+6.Revise autonomousInit. Remove the existing code and replace it with
+'''
+autoTimer.reset(); // Reset the timer to zero
+autoTimer.start(); // Start the timer
+
+7. That should put us in a good place to plan out the automation.
+Here's an example of how it should look (assuming we don't have gyro):
+'''
+//drive forward at half speed for 3 seconds
+if (timeElapsed < 3.0) {
+  m_myRobot.arcadeDrive(0.5, 0.0);
+
+//next turn left for a certain amount of time (we'll need to time our turns to tune this)
+} else if (timeElapsed >= 3.0 && timeElapsed < 3.5) {
+  m_myRobot.arcadeDrive(0.0, 0.5); //to turn right it would be -0.5. Can also add foward movmeent while turning
+
+//drive forward for another 2 seconds
+} else if (timeElaspsed >= 3.5 && timeElapsed < 5.5) {
+  m_myRobot.arcadeDrive(0.5, 0.0);
+
+//stop the robot
+} else {
+m_myRobot.arcadeDrive{0.0, 0.0);
